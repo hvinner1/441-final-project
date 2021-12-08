@@ -2,8 +2,11 @@ import RPi.GPIO as GPIO
 import time
 from pir import Pir
 from motor import Motor
-global pins
+global pins, cw, ccw
 pins = [18,20,22,24] # controller inputs: in1, in2, in3, in4
+ccw = [ [1,0,0,0],[1,1,0,0],[0,1,0,0],[0,1,1,0],
+        [0,0,1,0],[0,0,1,1],[0,0,0,1],[1,0,0,1] ]
+cw = ccw[:]  # use slicing to copy list (could also use ccw.copy() in Python 3)
 
 def buzzer(BUZZER):
     GPIO.setmode(GPIO.BCM)
@@ -26,7 +29,7 @@ class Alarm():
     print ("Sensor initializing . . .")
     #time.sleep(30) #Give sensor time to startup
     print ("50% . . .")
-    time.sleep(30) #Give sensor time to startup
+    time.sleep(10) #Give sensor time to startup
     print ("Active")
     print ("Press Ctrl+c to end program")
     GPIO.output(led, GPIO.HIGH)
