@@ -61,7 +61,6 @@ class Alarm():
   def runAlarm(self, pir, led):
     try:
       while True:
-        #runMotor()
         if GPIO.input(pir) == True: #If PIR pin goes high, motion is detected
           print ("Motion Detected!")
           buzzer(13)
@@ -80,6 +79,7 @@ class Alarm():
 
 pir = 23 #Assign pin 8 to PIR
 led = 21 #Assign pin 10 to LED
+runMotor()
 security = Alarm(pir,led)
 security.setup(led)
 security.runAlarm(pir, led)
