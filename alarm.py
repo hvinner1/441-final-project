@@ -2,6 +2,8 @@ import RPi.GPIO as GPIO
 import time
 from pir import Pir
 from motor import Motor
+GPIO.setmode(GPIO.BCM)
+
 
 global pins, cw, ccw
 pins = [18,20,22,24] # controller inputs: in1, in2, in3, in4
@@ -21,7 +23,6 @@ def runMotor():
     GPIO.cleanup()
 
 def buzzer(BUZZER):
-    GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     #BUZZER= 13
     buzzState = True
