@@ -82,15 +82,6 @@ def checkSpecialKeys():
 
     GPIO.output(L3, GPIO.LOW)
         #new code for changing secrete code (decided against this method for better secruity)
-    '''GPIO.output(L4, GPIO.HIGH)
-
-    if (GPIO.input(C4) == 1):
-        print(input)
-        print("changing code...")
-        secretCode = input
-        print(secretCode)
-        pressed = True
-    GPIO.output(L4, GPIO.LOW)''' 
 #end of new code
     GPIO.output(L1, GPIO.HIGH)
 

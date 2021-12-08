@@ -18,15 +18,13 @@ def buzzer(BUZZER):
 
 class Alarm():
 
-  stepper = Motor(pins)
-
   def __init__(self, pir, led):
     self.alarm = Pir(pir, led)
   
   def setup(self, led):
     GPIO.output(led, GPIO.LOW)
     print ("Sensor initializing . . .")
-    time.sleep(30) #Give sensor time to startup
+    #time.sleep(30) #Give sensor time to startup
     print ("50% . . .")
     time.sleep(30) #Give sensor time to startup
     print ("Active")
@@ -37,6 +35,7 @@ class Alarm():
 
   
   def runAlarm(self, pir, led):
+    stepper = Motor(pins)
     try:
       while True:
         stepper.loop(cw)
