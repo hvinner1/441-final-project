@@ -12,12 +12,13 @@ cw.reverse()
 
 def runMotor():
   stepper = Motor(pins)
-  while True:
-    stepper.loop(cw)
-    stepper.loop(ccw)
+  try:
+    while True:
+      stepper.loop(cw)
+      stepper.loop(ccw)
   except:
-    pass
-  GPIO.cleanup()
+      pass
+    GPIO.cleanup()
 
 def buzzer(BUZZER):
     GPIO.setmode(GPIO.BCM)
