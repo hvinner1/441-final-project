@@ -2,11 +2,13 @@ import RPi.GPIO as GPIO
 import time
 from pir import Pir
 from motor import Motor
+
 global pins, cw, ccw
 pins = [18,20,22,24] # controller inputs: in1, in2, in3, in4
 ccw = [ [1,0,0,0],[1,1,0,0],[0,1,0,0],[0,1,1,0],
         [0,0,1,0],[0,0,1,1],[0,0,0,1],[1,0,0,1] ]
-cw = ccw[:]  # use slicing to copy list (could also use ccw.copy() in Python 3)
+cw = ccw[:]  # use slicing to copy list 
+cw.reverse()
 
 def buzzer(BUZZER):
     GPIO.setmode(GPIO.BCM)
@@ -35,14 +37,19 @@ class Alarm():
     GPIO.output(led, GPIO.HIGH)
     time.sleep(1)
     GPIO.output(led, GPIO.LOW)
-
+  
+  def runMotor():
+    stepper = Motor(pins)
+    while True:
+      stepper.loop(cw)
+      stepper.loop(ccw)
+    except:
+      pass
+    GPIO.cleanup()
   
   def runAlarm(self, pir, led):
-    stepper = Motor(pins)
     try:
       while True:
-        stepper.loop(cw)
-        stepper.loop(ccw)
         if GPIO.input(pir) == True: #If PIR pin goes high, motion is detected
           print ("Motion Detected!")
           buzzer(13)
@@ -62,6 +69,7 @@ class Alarm():
 pir = 23 #Assign pin 8 to PIR
 led = 21 #Assign pin 10 to LED
 security = Alarm(pir,led)
+security.runMotor()
 security.setup(led)
 security.runAlarm(pir, led)
 
