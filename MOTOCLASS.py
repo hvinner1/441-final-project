@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time
+
 class Motor():
 
   def __init__(self, pins):
