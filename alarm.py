@@ -17,7 +17,7 @@ def runMotor():
       stepper.loop(cw)
       stepper.loop(ccw)
   except:
-      pass
+    pass
     GPIO.cleanup()
 
 def buzzer(BUZZER):
