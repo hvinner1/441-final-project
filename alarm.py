@@ -39,8 +39,8 @@ class Alarm():
   def runAlarm(self, pir, led):
     try:
       while True:
-        loop(cw)
-        loop(ccw)
+        stepper.loop(cw)
+        stepper.loop(ccw)
         if GPIO.input(pir) == True: #If PIR pin goes high, motion is detected
           print ("Motion Detected!")
           buzzer(13)
