@@ -4,7 +4,7 @@ import cgitb
 import json
 
 #Setip for the creation of the new webpage
-cgitb.enable(display=1)
+cgitb.enable(display=0, logdir="/home/pi/Documents/htmlissues")
 data = cgi.FieldStorage()
 
 #setting up the different variables
@@ -17,25 +17,14 @@ with open('pinData.txt', 'r') as pinDataRead:
     currentPin = pinData['pin'] #logging pin data as current pin within the system going to be used to compare latter
 
 #Checking if the current pin and pin value is empty, if true create a webpage asking to input a new pin
-if(currentPin == '' and pin == '') or (currentPin == '' and not pin.isdecimal() and pin.length() != 4):
-    print('Content-type: text/html\n\n')
-    print('''
-    <html>
-    <form action="/cgi-bin/open_page.py" method="POST">
-        <b>Enter New Pin Using Four Numbers</b>
-        <input type="text" name="pin"><br>
-        <input type="submit" name="submit" value="submit"><br>
-    </input>
-    </form>
-    </html>''')
 
 #checking if the current pin does not equal pin and if pin is empty
-elif(currentPin != pin and pin != ''):
+if currentPin != pin and pin == None:
     print('Content-type: text/html\n\n')
     print('''
     <html>
     <form action="/cgi-bin/open_page.py" method="POST">
-        <b>Wrong Pin! Please enter a Pin</b>
+        <b>Please enter a Pin</b><br>
         <input type="text" name="pin"><br>
         <input type="submit" name="submit" value="submit"><br>
     </input>
@@ -48,7 +37,8 @@ elif(currentPin != pin):
     print('''
     <html>
     <form action="/cgi-bin/open_page.py" method="POST">
-        <b>Wrong Pin! Please enter a Pin</b>
+        <b>Wrong Pin!</b><br>
+        <b> Please enter a Pin</b><br>
         <input type="text" name="pin"><br>
         <input type="submit" name="submit" value="submit"><br>
     </input>

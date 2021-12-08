@@ -4,7 +4,7 @@ import cgitb
 import json
 
 #Setip for the creation of the new webpage
-cgitb.enable(display=1)
+cgitb.enable(display=0, logdir="/home/pi/Documents/htmlissues")
 data = cgi.FieldStorage()
 
 #setting up the different variables
@@ -13,7 +13,7 @@ selection = data.getvalue('buttonHit')
 if(selection == 'Reset Pin'):
     pin = data.getvalue('Enter New Pin')
 else:
-    with open('pinData.txt', 'w') as pinDataRead:
+    with open('pinData.txt', 'r') as pinDataRead:
         pinData = json.load(pinDataRead)
         pin = pinData['pin']
 dataDump = {'pin':pin,'selection':selection}
