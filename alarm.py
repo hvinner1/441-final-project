@@ -40,12 +40,13 @@ class Alarm():
   
   def runMotor():
     stepper = Motor(pins)
-    while True:
-      stepper.loop(cw)
-      stepper.loop(ccw)
-    except:
-      pass
-    GPIO.cleanup()
+    try:
+      while True:
+        stepper.loop(cw)
+        stepper.loop(ccw)
+      except:
+        pass
+      GPIO.cleanup()
   
   def runAlarm(self, pir, led):
     try:
