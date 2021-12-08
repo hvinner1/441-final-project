@@ -10,6 +10,15 @@ ccw = [ [1,0,0,0],[1,1,0,0],[0,1,0,0],[0,1,1,0],
 cw = ccw[:]  # use slicing to copy list 
 cw.reverse()
 
+def runMotor():
+  stepper = Motor(pins)
+  while True:
+    stepper.loop(cw)
+    stepper.loop(ccw)
+  except:
+    pass
+  GPIO.cleanup()
+
 def buzzer(BUZZER):
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
@@ -38,18 +47,19 @@ class Alarm():
     time.sleep(1)
     GPIO.output(led, GPIO.LOW)
   
-  def runMotor():
-    stepper = Motor(pins)
-    while True:
-      stepper.loop(cw)
-      stepper.loop(ccw)
-    # except:
-    #   pass
-    # GPIO.cleanup()
+  # def runMotor():
+  #   stepper = Motor(pins)
+  #   while True:
+  #     stepper.loop(cw)
+  #     stepper.loop(ccw)
+  #   except:
+  #     pass
+  #   GPIO.cleanup()
   
   def runAlarm(self, pir, led):
     try:
       while True:
+        runMotor()
         if GPIO.input(pir) == True: #If PIR pin goes high, motion is detected
           print ("Motion Detected!")
           buzzer(13)
@@ -69,7 +79,6 @@ class Alarm():
 pir = 23 #Assign pin 8 to PIR
 led = 21 #Assign pin 10 to LED
 security = Alarm(pir,led)
-security.runMotor()
 security.setup(led)
 security.runAlarm(pir, led)
 
