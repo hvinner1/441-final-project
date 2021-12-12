@@ -4,7 +4,7 @@ from pir import Pir
 from motor import Motor
 GPIO.setmode(GPIO.BCM)
 import multiprocessing
-global pins, cw, ccw, keypadPressed, cstate
+global pins, cw, ccw, keypadPressed
 pins = [18,20,22,24] # controller inputs: in1, in2, in3, in4
 ccw = [ [1,0,0,0],[1,1,0,0],[0,1,0,0],[0,1,1,0],
         [0,0,1,0],[0,0,1,1],[0,0,0,1],[1,0,0,1] ]
@@ -25,7 +25,7 @@ C4 = 16
 # being held down or -1 if no key is pressed
 keypadPressed = -1
 secretCode = "1234"
-input = ""
+kinput = ""
 cstate = 'Arm Alarm'
 CC = 0
 # Setup GPIO
@@ -68,13 +68,13 @@ def setAllLines(state):
 
 def checkSpecialKeys():
     global secretCode
-    global input 
+    global kinput 
     global CC
     pressed = False
 
     GPIO.output(L3, GPIO.HIGH)
     if (GPIO.input(C4) == 1):
-        print(input)
+        print(kinput)
         print("Input reset!");
         pressed = True
     GPIO.output(L3, GPIO.LOW)
@@ -82,40 +82,40 @@ def checkSpecialKeys():
   #end of new code
     GPIO.output(L1, GPIO.HIGH)
     if (not pressed and GPIO.input(C4) == 1):
-        if input == secretCode:
+        if kinput == secretCode:
             print("Code correct!")
             CC = 1
             print(CC)
             cstate == 'Turn Off Alarm'
             # TODO: Unlock a door, turn a light on, etc.
-        elif input == "*":
+        elif kinput == "*":
           print("Alarm Armed")
           state = 'Arm Alarm'
         else:
             print("Incorrect code!")
-            print(input)
+            print(kinput)
             # TODO: Sound an alarm, send an email, etc.
         pressed = True
     GPIO.output(L3, GPIO.LOW)
     if pressed:
-        input = ""
+        kinput = ""
     return pressed
 
 # reads the columns and appends the value, that corresponds
 # to the button, to a variable
 def readLine(line, characters):
-    global input
+    global kinput
     # We have to send a pulse on each line to
     # detect button presses
     GPIO.output(line, GPIO.HIGH)
     if(GPIO.input(C1) == 1):
-        input = input + characters[0]
+        kinput = kinput + characters[0]
     if(GPIO.input(C2) == 1):
-        input = input + characters[1]
+        kinput = kinput + characters[1]
     if(GPIO.input(C3) == 1):
-        input = input + characters[2]
+        kinput = kinput + characters[2]
     if(GPIO.input(C4) == 1):
-        input = input + characters[3]
+        kinput = kinput + characters[3]
     GPIO.output(line, GPIO.LOW)
 
 def runKey():
@@ -237,9 +237,9 @@ while True:
     keycheck = multiprocessing.Process(target=runKey)
     keycheck.start()
     meme = 2
-    print(input)
+    print(kinput)
   if cstate == 'Turn Off Alarm':
-    print("this is code" + input)
+    print("this is code" + kinput)
     cstate = 'Turn Off Alarm'
     print(cstate)
           #updateHTML(state)
@@ -247,7 +247,7 @@ while True:
     print(cstate)
     motorcont.terminate()
     alarmset.terminate()
-    if input == '*':
+    if kinput == '*':
       motorcont.start()
       alarmset.start()
       meme = 0
