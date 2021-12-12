@@ -4,7 +4,8 @@ from pir import Pir
 from motor import Motor
 GPIO.setmode(GPIO.BCM)
 import multiprocessing
-global pins, cw, ccw, keypadPressed, cstate
+global pins, cw, ccw, keypadPressed, cstate, CC, 
+input
 pins = [18,20,22,24] # controller inputs: in1, in2, in3, in4
 ccw = [ [1,0,0,0],[1,1,0,0],[0,1,0,0],[0,1,1,0],
         [0,0,1,0],[0,0,1,1],[0,0,0,1],[1,0,0,1] ]
@@ -27,6 +28,7 @@ keypadPressed = -1
 secretCode = "1234"
 input = ""
 cstate = 'Arm Alarm'
+CC = 0
 # Setup GPIO
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
@@ -66,10 +68,7 @@ def setAllLines(state):
     GPIO.output(L4, state)
 
 def checkSpecialKeys():
-    global input
     global secretCode
-    global CC
-    CC = 0
     pressed = False
 
     GPIO.output(L3, GPIO.HIGH)
