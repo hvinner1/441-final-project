@@ -25,10 +25,7 @@ keypadPressed = -1
 
 
 # **INSERTED FROM TREVOR TO READ FROM FILE**
-with open('pinData.txt', 'w') as pinDataRead:
-        pinData = json.load(pinDataRead)
-        secretCode = pinData['pin']
-#secretCode = "1234"
+secretCode = "1234"
 input = ""
 
 # Setup GPIO
