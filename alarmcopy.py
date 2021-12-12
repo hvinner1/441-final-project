@@ -227,21 +227,21 @@ while True:
     print(cstate)
     meme = 1
   #updateHTML(state)
-  if cstate == 'beeping' and meme == 1:
-    print(cstate)
-    keycheck = multiprocessing.Process(target=runKey)
-    keycheck.start()
-    meme = 2
-  if CC == 1:
-    print("this is code" + input)
-    cstate = 'Turn Off Alarm'
-    print(cstate)
-      #updateHTML(state)
-  if cstate == 'Turn Off Alarm':
-    print(cstate)
-    motorcont.terminate()
-    alarmset.terminate()
-    if input == '*':
-      motorcont.start()
-      alarmset.start()
-      meme = 0
+    if cstate == 'beeping' and meme == 1:
+      print(cstate)
+      keycheck = multiprocessing.Process(target=runKey)
+      keycheck.start()
+      meme = 2
+      if CC == 1:
+        print("this is code" + input)
+        cstate = 'Turn Off Alarm'
+        print(cstate)
+          #updateHTML(state)
+        if cstate == 'Turn Off Alarm':
+          print(cstate)
+          motorcont.terminate()
+          alarmset.terminate()
+          if input == '*':
+            motorcont.start()
+            alarmset.start()
+            meme = 0
