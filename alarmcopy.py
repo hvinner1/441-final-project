@@ -230,6 +230,10 @@ while True:
     print(cstate)
     meme = 1
   #updateHTML(state)
+  if cstate == 'Turn Off Alarm':
+    print("this is code" + input)
+    cstate = 'Turn Off Alarm'
+    print(cstate)
   if cstate == 'beeping' and meme == 1:
     print(cstate)
     keycheck = multiprocessing.Process(target=runKey)
