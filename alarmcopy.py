@@ -4,7 +4,7 @@ from pir import Pir
 from motor import Motor
 GPIO.setmode(GPIO.BCM)
 import multiprocessing
-global pins, cw, ccw, keypadPressed, cstate, CC
+global pins, cw, ccw, keypadPressed, cstate
 pins = [18,20,22,24] # controller inputs: in1, in2, in3, in4
 ccw = [ [1,0,0,0],[1,1,0,0],[0,1,0,0],[0,1,1,0],
         [0,0,1,0],[0,0,1,1],[0,0,0,1],[1,0,0,1] ]
@@ -238,9 +238,6 @@ while True:
     keycheck.start()
     meme = 2
     print(input)
-    if input == secretCode:
-      print("fuck")
-      break
   if cstate == 'Turn Off Alarm':
     print("this is code" + input)
     cstate = 'Turn Off Alarm'
