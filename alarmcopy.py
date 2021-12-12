@@ -28,7 +28,7 @@ secretCode = "1234"
 input = ""
 cstate = 'Arm Alarm'
 
-CC = False
+CC = 0
 # Setup GPIO
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
@@ -84,7 +84,7 @@ def checkSpecialKeys():
     if (not pressed and GPIO.input(C4) == 1):
         if input == secretCode:
             print("Code correct!")
-            CC = True
+            CC = 1
             # TODO: Unlock a door, turn a light on, etc.
         elif input == "*":
           print("Alarm Armed")
@@ -232,7 +232,7 @@ while True:
     keycheck = multiprocessing.Process(target=runKey)
     keycheck.start()
     meme = 2
-  if CC:
+  if CC == 1:
     print("this is code" + input)
     cstate = 'Turn Off Alarm'
     print(cstate)
