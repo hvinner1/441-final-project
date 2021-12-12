@@ -16,6 +16,8 @@ C1 = 6
 C2 = 19
 C3 = 26
 C4 = 16
+global secretCode
+secretCode = '1234'
 
 # The GPIO pin of the column of the key that is currently
 # being held down or -1 if no key is pressed
@@ -58,7 +60,7 @@ class Keypad():
   #          secretCode = pinData['pin']
     #secretCode = "1234"
   #  input = ""
-  secretCode = '1234'
+ # secretCode = '1234'
 
   # This callback registers the key that was pressed
   # if no other key is currently pressed
