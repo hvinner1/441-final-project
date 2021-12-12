@@ -218,6 +218,7 @@ meme = 0
 
 while True:
   time.sleep(1)
+  print(CC)
   if cstate == 'Arm Alarm' and meme == 0:
     print(cstate)
     motorcont = multiprocessing.Process(target=runMotor) 
