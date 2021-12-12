@@ -67,8 +67,9 @@ def setAllLines(state):
     GPIO.output(L4, state)
 
 def checkSpecialKeys():
-    global input, CC
+    global input
     global secretCode
+    global C
     pressed = False
 
     GPIO.output(L3, GPIO.HIGH)
