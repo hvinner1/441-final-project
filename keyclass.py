@@ -67,7 +67,7 @@ class Keypad():
       if keypadPressed == -1:
           keypadPressed = channel
 
-  def detection():
+  def detection(self):
   # Detect the rising edges on the column lines of the
   # keypad. This way, we can detect if the user presses
   # a button when we send a pulse.
@@ -78,7 +78,7 @@ class Keypad():
 
   # Sets all lines to a specific state. This is a helper
   # for detecting when the user releases a button
-  def setAllLines(state):
+  def setAllLines(self, state):
       GPIO.output(self.L1, state)
       GPIO.output(self.L2, state)
       GPIO.output(self.L3, state)

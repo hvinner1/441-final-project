@@ -129,10 +129,11 @@ def readLine(line, characters):
 
 def runKey():
   try:
+      
       while True:
           # If a button was previously pressed,
           # check, whether the user has released it yet
-          if global keypadPressed != -1:
+          if keypadPressed != -1:
               setAllLines(GPIO.HIGH)
               if GPIO.input(keypadPressed) == 0:
                   keypadPressed = -1
