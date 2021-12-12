@@ -77,13 +77,6 @@ def checkSpecialKeys():
     GPIO.output(L3, GPIO.LOW)
         #new code for changing secrete code (decided against this method for better secruity)
 #end of new code
- '''GPIO.output(L4, GPIO.HIGH)
-
-    if (GPIO.input(C4) == 1):
-        print(Alarm armed)
-        print(secretCode)
-        pressed = True
-    GPIO.output(L4, GPIO.LOW)''' 
     GPIO.output(L1, GPIO.HIGH)
     if (not pressed and GPIO.input(C4) == 1):
         if input == secretCode:
