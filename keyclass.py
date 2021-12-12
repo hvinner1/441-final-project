@@ -120,7 +120,7 @@ class Keypad():
 
   # reads the columns and appends the value, that corresponds
   # to the button, to a variable
-  def readLine(line, characters):
+  def readLine(self, line, characters):
       global input
       # We have to send a pulse on each line to
       # detect button presses

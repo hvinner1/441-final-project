@@ -132,7 +132,7 @@ def runKey():
       while True:
           # If a button was previously pressed,
           # check, whether the user has released it yet
-          if keypadPressed != -1:
+          if global keypadPressed != -1:
               setAllLines(GPIO.HIGH)
               if GPIO.input(keypadPressed) == 0:
                   keypadPressed = -1
