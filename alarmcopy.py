@@ -238,7 +238,7 @@ while True:
     meme = 2
     print(input)
     if cstate == 'Turn Off Alarm':
-      print(fuck)
+      print("fuck")
       break
   if cstate == 'Turn Off Alarm':
     print("this is code" + input)
