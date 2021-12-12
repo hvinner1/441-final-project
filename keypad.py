@@ -138,7 +138,7 @@ def runKey():
               if GPIO.input(keypadPressed) == 0:
                   keypadPressed = -1
               else:
-                  time.sleep(0.1)
+                  time.sleep(0.2)
           # Otherwise, just read the input
           else:
               if not checkSpecialKeys():
@@ -146,9 +146,9 @@ def runKey():
                   two= readLine(L2, ["4","5","6","B"])
                   three= readLine(L3, ["7","8","9","C"])
                   four= readLine(L4, ["*","0","#","D"])
-                  time.sleep(0.1)
+                  time.sleep(0.2)
               else:
-                  time.sleep(0.1)
+                  time.sleep(0.2)
           
   except KeyboardInterrupt:
       print("\nApplication stopped!")
