@@ -88,6 +88,7 @@ class Keypad():
 
   def checkSpecialKeys(self):
       global input
+      input = ''
       global secretCode
       pressed = False
 
@@ -110,7 +111,6 @@ class Keypad():
           else:
               print("Incorrect code!")
               print("this is input" + input)
-              # TODO: Sound an alarm, send an email, etc.
           pressed = True
 
       GPIO.output(self.L3, GPIO.LOW)
