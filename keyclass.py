@@ -28,16 +28,16 @@ class Keypad():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
 
-    GPIO.setup(L1, GPIO.OUT)
-    GPIO.setup(L2, GPIO.OUT)
-    GPIO.setup(L3, GPIO.OUT)
-    GPIO.setup(L4, GPIO.OUT)
+    GPIO.setup(self.L1, GPIO.OUT)
+    GPIO.setup(self.L2, GPIO.OUT)
+    GPIO.setup(self.L3, GPIO.OUT)
+    GPIO.setup(self.L4, GPIO.OUT)
 
     # Use the internal pull-down resistors
-    GPIO.setup(C1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    GPIO.setup(C2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    GPIO.setup(C3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    GPIO.setup(C4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(self.C1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(self.C2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(self.C3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(self.C4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 
 
@@ -61,37 +61,37 @@ class Keypad():
   # Detect the rising edges on the column lines of the
   # keypad. This way, we can detect if the user presses
   # a button when we send a pulse.
-    GPIO.add_event_detect(C1, GPIO.RISING, callback=keypadCallback)
-    GPIO.add_event_detect(C2, GPIO.RISING, callback=keypadCallback)
-    GPIO.add_event_detect(C3, GPIO.RISING, callback=keypadCallback)
-    GPIO.add_event_detect(C4, GPIO.RISING, callback=keypadCallback)
+    GPIO.add_event_detect(self.C1, GPIO.RISING, callback=keypadCallback)
+    GPIO.add_event_detect(self.C2, GPIO.RISING, callback=keypadCallback)
+    GPIO.add_event_detect(self.C3, GPIO.RISING, callback=keypadCallback)
+    GPIO.add_event_detect(self.C4, GPIO.RISING, callback=keypadCallback)
 
   # Sets all lines to a specific state. This is a helper
   # for detecting when the user releases a button
   def setAllLines(state):
-      GPIO.output(L1, state)
-      GPIO.output(L2, state)
-      GPIO.output(L3, state)
-      GPIO.output(L4, state)
+      GPIO.output(self.L1, state)
+      GPIO.output(self.L2, state)
+      GPIO.output(self.L3, state)
+      GPIO.output(self.L4, state)
 
   def checkSpecialKeys():
       global input
       global secretCode
       pressed = False
 
-      GPIO.output(L3, GPIO.HIGH)
+      GPIO.output(self.L3, GPIO.HIGH)
 
-      if (GPIO.input(C4) == 1):
+      if (GPIO.input(self.C4) == 1):
           print(input)
           print("Input reset!");
           pressed = True
 
-      GPIO.output(L3, GPIO.LOW)
+      GPIO.output(self.L3, GPIO.LOW)
           #new code for changing secrete code (decided against this method for better secruity)
   #end of new code
-      GPIO.output(L1, GPIO.HIGH)
+      GPIO.output(self.L1, GPIO.HIGH)
 
-      if (not pressed and GPIO.input(C4) == 1):
+      if (not pressed and GPIO.input(self.C4) == 1):
           if input == secretCode:
               print("Code correct!")
               # TODO: Unlock a door, turn a light on, etc.
@@ -101,7 +101,7 @@ class Keypad():
               # TODO: Sound an alarm, send an email, etc.
           pressed = True
 
-      GPIO.output(L3, GPIO.LOW)
+      GPIO.output(self.L3, GPIO.LOW)
 
       if pressed:
           input = ""
@@ -115,13 +115,13 @@ class Keypad():
       # We have to send a pulse on each line to
       # detect button presses
       GPIO.output(line, GPIO.HIGH)
-      if(GPIO.input(C1) == 1):
+      if(GPIO.input(self.C1) == 1):
           input = input + characters[0]
-      if(GPIO.input(C2) == 1):
+      if(GPIO.input(self.C2) == 1):
           input = input + characters[1]
-      if(GPIO.input(C3) == 1):
+      if(GPIO.input(self.C3) == 1):
           input = input + characters[2]
-      if(GPIO.input(C4) == 1):
+      if(GPIO.input(self.C4) == 1):
           input = input + characters[3]
       GPIO.output(line, GPIO.LOW)
 
