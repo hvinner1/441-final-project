@@ -12,7 +12,7 @@ ccw = [ [1,0,0,0],[1,1,0,0],[0,1,0,0],[0,1,1,0],
 cw = ccw[:]  # use slicing to copy list 
 cw.reverse()
 
-def runMotor():
+def runMotor(): #runs the motor cw and ccw in a loop
   stepper = Motor(pins)
   try:
     while True:
@@ -24,7 +24,7 @@ def runMotor():
 
   GPIO.cleanup()
 
-def buzzer(BUZZER):
+def buzzer(BUZZER): #turns on the buzzer and beeps 4 times
     GPIO.setwarnings(False)
     #BUZZER= 13
     buzzState = True
@@ -38,10 +38,10 @@ def buzzer(BUZZER):
 
 class Alarm():
 
-  def __init__(self, pir, led):
+  def __init__(self, pir, led): #create alarm as a pir
     self.alarm = Pir(pir, led)
   
-  def setup(self, led):
+  def setup(self, led): #set up of the sensor to initialize
     GPIO.output(led, GPIO.LOW)
     print ("Sensor initializing . . .")
     #time.sleep(30) #Give sensor time to startup
@@ -53,13 +53,13 @@ class Alarm():
     time.sleep(1)
     GPIO.output(led, GPIO.LOW)  
   
-  def runAlarm(self, pir, led):
+  def runAlarm(self, pir, led): #runs the actual alarm
     stepper = Motor(pins)
     try:
       while True:
         if GPIO.input(pir) == True: #If PIR pin goes high, motion is detected
           print ("Motion Detected!")
-          buzzer(13)
+          buzzer(13) #turn on buzzer to signal motion
           print("Buzzer on")
           GPIO.output(led, GPIO.HIGH) #Turn on LED
           time.sleep(3) #Keep LED on for 3 seconds
@@ -71,13 +71,14 @@ class Alarm():
     GPIO.cleanup() 
     print ("Program ended")
 
-def createAlarm(pir, led):
+def createAlarm(pir, led): #create a function to create and run alarm for multiprocessing
   security = Alarm(pir,led)
   security.setup(led)
   security.runAlarm(pir, led)
 
 pir = 23 #Assign pin 8 to PIR
 led = 21 #Assign pin 10 to LED
+#run functions continuously with multiprocessing
 motorcont = multiprocessing.Process(target=runMotor) 
 motorcont.start() 
 alarmset = multiprocessing.Process(target=createAlarm, args=(pir,led))

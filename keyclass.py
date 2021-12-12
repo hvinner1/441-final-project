@@ -126,13 +126,13 @@ class Keypad():
       # detect button presses
       GPIO.output(line, GPIO.HIGH)
       if(GPIO.input(self.C1) == 1):
-          input = input + characters[0]
+          input = input + str(characters[0])
       if(GPIO.input(self.C2) == 1):
-          input = input + characters[1]
+          input = input + str(characters[1])
       if(GPIO.input(self.C3) == 1):
-          input = input + characters[2]
+          input = input + str(characters[2])
       if(GPIO.input(self.C4) == 1):
-          input = input + characters[3]
+          input = input + str(characters[3])
       GPIO.output(line, GPIO.LOW)
 
 
@@ -160,3 +160,12 @@ try:
         
 except KeyboardInterrupt:
     print("\nApplication stopped!")
+
+'''
+Traceback (most recent call last):
+  File "keyclass.py", line 154, in <module>
+    two = key.readLine(L2, ["4","5","6","B"])
+  File "keyclass.py", line 133, in readLine
+    input = input + characters[2]
+TypeError: unsupported operand type(s) for +: 'builtin_function_or_method' and 'str'
+'''
