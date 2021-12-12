@@ -227,7 +227,7 @@ if cstate == 'beeping':
   print(cstate)
   keycheck = multiprocessing.Process(target=runKey)
   keycheck.start()
-  if input == secretCode:
+if input == secretCode:
     cstate = 'Turn Off Alarm'
     print(cstate)
     #updateHTML(state)
