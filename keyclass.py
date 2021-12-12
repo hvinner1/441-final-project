@@ -131,14 +131,14 @@ try:
         # If a button was previously pressed,
         # check, whether the user has released it yet
         if keypadPressed != -1:
-            setAllLines(GPIO.HIGH)
+            key.setAllLines(GPIO.HIGH)
             if GPIO.input(keypadPressed) == 0:
                 keypadPressed = -1
             else:
                 time.sleep(0.1)
         # Otherwise, just read the input
         else:
-            if not checkSpecialKeys():
+            if not key.checkSpecialKeys():
                 one = key.readLine(L1, ["1","2","3","A"])
                 two = key.readLine(L2, ["4","5","6","B"])
                 three = key.readLine(L3, ["7","8","9","C"])
