@@ -84,6 +84,7 @@ def checkSpecialKeys():
         if input == secretCode:
             print("Code correct!")
             CC = 1
+            print(CC)
             # TODO: Unlock a door, turn a light on, etc.
         elif input == "*":
           print("Alarm Armed")
@@ -217,7 +218,6 @@ meme = 0
 
 while True:
   time.sleep(1)
-  print(CC)
   if cstate == 'Arm Alarm' and meme == 0:
     print(cstate)
     motorcont = multiprocessing.Process(target=runMotor) 
