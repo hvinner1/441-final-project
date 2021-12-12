@@ -129,7 +129,7 @@ def readLine(line, characters):
 
 def runKey():
   try:
-      
+      keypadPressed = -1
       while True:
           # If a button was previously pressed,
           # check, whether the user has released it yet

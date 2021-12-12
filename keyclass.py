@@ -62,7 +62,7 @@ class Keypad():
 
   # This callback registers the key that was pressed
   # if no other key is currently pressed
-  def keypadCallback(channel):
+  def keypadCallback(self, channel):
       global keypadPressed
       if keypadPressed == -1:
           keypadPressed = channel
