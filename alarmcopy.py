@@ -228,17 +228,15 @@ while True:
     alarmset.start()
     cstate = 'beeping'
     print(cstate)
+
     meme = 1
   #updateHTML(state)
-  if cstate == 'Turn Off Alarm':
-    print("this is code" + input)
-    cstate = 'Turn Off Alarm'
-    print(cstate)
   if cstate == 'beeping' and meme == 1:
     print(cstate)
     keycheck = multiprocessing.Process(target=runKey)
     keycheck.start()
     meme = 2
+    print(input)
   if cstate == 'Turn Off Alarm':
     print("this is code" + input)
     cstate = 'Turn Off Alarm'
