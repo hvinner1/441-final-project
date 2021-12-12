@@ -41,14 +41,14 @@ class Keypad():
 
 
 
-  def read():
+  #def read():
     # **INSERTED FROM TREVOR TO READ FROM FILE**
-    with open('pinData.txt', 'w') as pinDataRead:
-            pinData = json.load(pinDataRead)
-            secretCode = pinData['pin']
+  #  with open('pinData.txt', 'w') as pinDataRead:
+  #          pinData = json.load(pinDataRead)
+  #          secretCode = pinData['pin']
     #secretCode = "1234"
-    input = ""
-
+  #  input = ""
+  secretCode = '1234'
 
   # This callback registers the key that was pressed
   # if no other key is currently pressed
