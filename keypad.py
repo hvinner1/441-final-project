@@ -97,6 +97,9 @@ def checkSpecialKeys():
         if input == secretCode:
             print("Code correct!")
             # TODO: Unlock a door, turn a light on, etc.
+        elif input == "*":
+          print("Alarm Armed")
+          state = 'Arm Alarm'
         else:
             print("Incorrect code!")
             print(input)

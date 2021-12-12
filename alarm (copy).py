@@ -2,18 +2,147 @@ import RPi.GPIO as GPIO
 import time
 from pir import Pir
 from motor import Motor
-from keyclass import Keypad
 GPIO.setmode(GPIO.BCM)
 import multiprocessing
-import json
-
-global pins, cw, ccw, state
-state= "Arm Alarm"
+global pins, cw, ccw, keypadPressed, state
 pins = [18,20,22,24] # controller inputs: in1, in2, in3, in4
 ccw = [ [1,0,0,0],[1,1,0,0],[0,1,0,0],[0,1,1,0],
         [0,0,1,0],[0,0,1,1],[0,0,0,1],[1,0,0,1] ]
 cw = ccw[:]  # use slicing to copy list 
 cw.reverse()
+# These are the GPIO pin numbers where the
+# lines of the keypad matrix are connected
+L1 = 4
+L2 = 27
+L3 = 17
+L4 = 5
+# These are the four columns
+C1 = 6
+C2 = 19
+C3 = 26
+C4 = 16
+# The GPIO pin of the column of the key that is currently
+# being held down or -1 if no key is pressed
+keypadPressed = -1
+secretCode = "1234"
+input = ""
+state = 'Arm Alarm'
+isMultiprocessing = 0
+
+# Setup GPIO
+GPIO.setwarnings(False)
+GPIO.setup(L1, GPIO.OUT)
+GPIO.setup(L2, GPIO.OUT)
+GPIO.setup(L3, GPIO.OUT)
+GPIO.setup(L4, GPIO.OUT)
+# Use the internal pull-down resistors
+GPIO.setup(C1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(C2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(C3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(C4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+# This callback registers the key that was pressed
+# if no other key is currently pressed
+def keypadCallback(channel):
+    global keypadPressed
+    if keypadPressed == -1:
+        keypadPressed = channel
+
+# Detect the rising edges on the column lines of the
+# keypad. This way, we can detect if the user presses
+# a button when we send a pulse.
+GPIO.add_event_detect(C1, GPIO.RISING, callback=keypadCallback)
+GPIO.add_event_detect(C2, GPIO.RISING, callback=keypadCallback)
+GPIO.add_event_detect(C3, GPIO.RISING, callback=keypadCallback)
+GPIO.add_event_detect(C4, GPIO.RISING, callback=keypadCallback)
+
+# Sets all lines to a specific state. This is a helper
+# for detecting when the user releases a button
+def setAllLines(state):
+    GPIO.output(L1, state)
+    GPIO.output(L2, state)
+    GPIO.output(L3, state)
+    GPIO.output(L4, state)
+
+def checkSpecialKeys():
+    global input
+    global secretCode
+    pressed = False
+
+    GPIO.output(L3, GPIO.HIGH)
+    if (GPIO.input(C4) == 1):
+        print(input)
+        print("Input reset!");
+        pressed = True
+    GPIO.output(L3, GPIO.LOW)
+        #new code for changing secrete code (decided against this method for better secruity)
+#end of new code
+ '''GPIO.output(L4, GPIO.HIGH)
+
+    if (GPIO.input(C4) == 1):
+        print(Alarm armed)
+        print(secretCode)
+        pressed = True
+    GPIO.output(L4, GPIO.LOW)''' 
+    GPIO.output(L1, GPIO.HIGH)
+    if (not pressed and GPIO.input(C4) == 1):
+        if input == secretCode:
+            print("Code correct!")
+            # TODO: Unlock a door, turn a light on, etc.
+        elif input == "*":
+          print("Alarm Armed")
+          state = 'Arm Alarm'
+        else:
+            print("Incorrect code!")
+            print(input)
+            # TODO: Sound an alarm, send an email, etc.
+        pressed = True
+    GPIO.output(L3, GPIO.LOW)
+    if pressed:
+        input = ""
+    return pressed
+
+# reads the columns and appends the value, that corresponds
+# to the button, to a variable
+def readLine(line, characters):
+    global input
+    # We have to send a pulse on each line to
+    # detect button presses
+    GPIO.output(line, GPIO.HIGH)
+    if(GPIO.input(C1) == 1):
+        input = input + characters[0]
+    if(GPIO.input(C2) == 1):
+        input = input + characters[1]
+    if(GPIO.input(C3) == 1):
+        input = input + characters[2]
+    if(GPIO.input(C4) == 1):
+        input = input + characters[3]
+    GPIO.output(line, GPIO.LOW)
+
+def runKey():
+  try:
+      keypadPressed = -1
+      while True:
+          # If a button was previously pressed,
+          # check, whether the user has released it yet
+          if keypadPressed != -1:
+              setAllLines(GPIO.HIGH)
+              if GPIO.input(keypadPressed) == 0:
+                  keypadPressed = -1
+              else:
+                  time.sleep(0.2)
+          # Otherwise, just read the input
+          else:
+              if not checkSpecialKeys():
+                  one= readLine(L1, ["1","2","3","A"])
+                  two= readLine(L2, ["4","5","6","B"])
+                  three= readLine(L3, ["7","8","9","C"])
+                  four= readLine(L4, ["*","0","#","D"])
+                  time.sleep(0.2)
+              else:
+                  time.sleep(0.2)        
+  except KeyboardInterrupt:
+      print("\nApplication stopped!")
 
 def runMotor():
   stepper = Motor(pins)
@@ -38,7 +167,7 @@ def buzzer(BUZZER):
       GPIO.output(BUZZER, 1)# set output to 3.3V
       time.sleep(0.1)
       GPIO.output(BUZZER, 0)
-  
+ '''
 def checkHTML():
   with open('pinData.txt', 'r') as pinDataRead:
             pinData = json.load(pinDataRead)
@@ -56,8 +185,7 @@ def updateHTML(state):
             # 'Turn Off Alarm' -> disables alarm
             # 'Arm Alarm' -> sensing
             # 'Reset Pin' -> changes pin
-
-
+'''
 
 class Alarm():
 
@@ -101,40 +229,45 @@ def createAlarm(pir, led):
   security.setup(led)
   security.runAlarm(pir, led)
 
-L1 = 4
-L2 = 27
-L3 = 17
-L4 = 5
-C1 = 6
-C2 = 19
-C3 = 26
-C4 = 16
-keypadPressed = -1
-pir = 23 #Assign pin 8 to PIR
-led = 21 #Assign pin 10 to LED
-key = Keypad(L1, L2, L3, L4, C1, C2, C3, C4)
-htmlchecker = multiprocessing.Process(target=checkHTML)
-htmlchecker.start()
-motorcont = multiprocessing.Process(target=runMotor) 
-motorcont.start()
-alarmset = multiprocessing.Process(target=createAlarm, args=(pir,led))
-alarmset.start()
+
+# htmlchecker = multiprocessing.Process(target=checkHTML)
+# htmlchecker.start()
+#keycheck = multiprocessing.Process(target=runKey) 
+#keycheck.start() 
+#motorcont = multiprocessing.Process(target=runMotor) 
+#motorcont.start()
+#alarmset = multiprocessing.Process(target=createAlarm, args=(pir,led))
+#alarmset.start()
 
 
-while state == 'Arm Alarm':
+
+if state == 'Arm Alarm':
   motorcont = multiprocessing.Process(target=runMotor) 
   motorcont.start()
   alarmset = multiprocessing.Process(target=createAlarm, args=(pir,led))
   alarmset.start()
   state = 'beeping'
-  updateHTML(state)
-while state == 'beeping':
-  keyOn = multiprocessing.Process(target=Keypad)
-  keyOn.start()
-  if secretCode == input:
+  #updateHTML(state)
+if state == 'beeping':
+  keycheck = multiprocessing.Process(target=runKey)
+  keycheck.start()
+  if input == secretCode:
     state = 'Turn Off Alarm'
-    updateHTML(state)
-while state == 'Turn Off Alarm':
-  off motors
-  until html says armed
+    #updateHTML(state)
+if state == 'Turn Off Alarm':
+  motorcont.terminate()
+  alarmset.terminate()
+  if input == "D"
   #state = 'Arm Alarm'
+
+
+
+ '''GPIO.output(L4, GPIO.HIGH)
+
+    if (GPIO.input(C4) == 1):
+        print(input)
+        print("changing code...")
+        secretCode = input
+        print(secretCode)
+        pressed = True
+    GPIO.output(L4, GPIO.LOW)''' 
