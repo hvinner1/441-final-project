@@ -27,7 +27,6 @@ keypadPressed = -1
 secretCode = "1234"
 input = ""
 cstate = 'Arm Alarm'
-CC = 0
 # Setup GPIO
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
