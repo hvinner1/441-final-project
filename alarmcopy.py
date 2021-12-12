@@ -215,7 +215,6 @@ led = 21 #Assign pin 10 to LED
 meme = 0
 
 while True:
-  print(meme)
   if cstate == 'Arm Alarm' and meme == 0:
     print(cstate)
     motorcont = multiprocessing.Process(target=runMotor) 
@@ -226,17 +225,17 @@ while True:
     print(cstate)
     meme = 1
   #updateHTML(state)
-  elif cstate == 'beeping' and meme == 1:
+  if cstate == 'beeping' and meme == 1:
     print(cstate)
     keycheck = multiprocessing.Process(target=runKey)
     keycheck.start()
     meme = 2
-  elif input == secretCode:
+  if input == secretCode:
     print("this is new input" + input)
     cstate = 'Turn Off Alarm'
     print(cstate)
       #updateHTML(state)
-  elif cstate == 'Turn Off Alarm':
+  if cstate == 'Turn Off Alarm':
     print(cstate)
     motorcont.terminate()
     alarmset.terminate()
