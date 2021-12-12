@@ -126,30 +126,30 @@ def readLine(line, characters):
         input = input + characters[3]
     GPIO.output(line, GPIO.LOW)
 
-def runKey():
-  keypadPressed = -1
-  try:
-      while True:
-          # If a button was previously pressed,
-          # check, whether the user has released it yet
-          if keypadPressed != -1:
-              setAllLines(GPIO.HIGH)
-              if GPIO.input(keypadPressed) == 0:
-                  keypadPressed = -1
-              else:
-                  time.sleep(0.1)
-          # Otherwise, just read the input
-          else:
-              if not checkSpecialKeys():
-                  one= readLine(L1, ["1","2","3","A"])
-                  two= readLine(L2, ["4","5","6","B"])
-                  three= readLine(L3, ["7","8","9","C"])
-                  four= readLine(L4, ["*","0","#","D"])
-                  time.sleep(0.1)
-              else:
-                  time.sleep(0.1)
-          
-  except KeyboardInterrupt:
+# def runKey():
+#   keypadPressed = -1
+try:
+    while True:
+        # If a button was previously pressed,
+        # check, whether the user has released it yet
+        if keypadPressed != -1:
+            setAllLines(GPIO.HIGH)
+            if GPIO.input(keypadPressed) == 0:
+                keypadPressed = -1
+            else:
+                time.sleep(0.1)
+        # Otherwise, just read the input
+        else:
+            if not checkSpecialKeys():
+                one= readLine(L1, ["1","2","3","A"])
+                two= readLine(L2, ["4","5","6","B"])
+                three= readLine(L3, ["7","8","9","C"])
+                four= readLine(L4, ["*","0","#","D"])
+                time.sleep(0.1)
+            else:
+                time.sleep(0.1)
+        
+except KeyboardInterrupt:
       print("\nApplication stopped!")
 
-runKey()
+# runKey()
