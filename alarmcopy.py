@@ -85,6 +85,7 @@ def checkSpecialKeys():
             print("Code correct!")
             CC = 1
             print(CC)
+            cstate == 'Turn Off Alarm'
             # TODO: Unlock a door, turn a light on, etc.
         elif input == "*":
           print("Alarm Armed")
