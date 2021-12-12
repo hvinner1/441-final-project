@@ -257,7 +257,9 @@ if state == 'beeping':
 if state == 'Turn Off Alarm':
   motorcont.terminate()
   alarmset.terminate()
-  if input == "D"
+  if input == "*"
+  motorcont.start()
+  alarmset.start()
   #state = 'Arm Alarm'
 
 
