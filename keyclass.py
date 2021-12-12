@@ -18,6 +18,8 @@ C3 = 26
 C4 = 16
 global secretCode
 secretCode = '1234'
+global input
+input = ''
 
 # The GPIO pin of the column of the key that is currently
 # being held down or -1 if no key is pressed
@@ -87,8 +89,6 @@ class Keypad():
       GPIO.output(self.L4, state)
 
   def checkSpecialKeys(self):
-      global input
-      input = ''
       global secretCode
       pressed = False
 
@@ -124,7 +124,7 @@ class Keypad():
   # to the button, to a variable
   def readLine(self, line, characters):
       global input 
-      input = ''
+      input = '15'
       # We have to send a pulse on each line to
       # detect button presses
       GPIO.output(line, GPIO.HIGH)
