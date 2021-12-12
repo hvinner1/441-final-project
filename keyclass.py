@@ -121,7 +121,7 @@ class Keypad():
   # reads the columns and appends the value, that corresponds
   # to the button, to a variable
   def readLine(self, line, characters):
-      global input
+      global input = ''
       # We have to send a pulse on each line to
       # detect button presses
       GPIO.output(line, GPIO.HIGH)
@@ -167,5 +167,13 @@ Traceback (most recent call last):
     two = key.readLine(L2, ["4","5","6","B"])
   File "keyclass.py", line 133, in readLine
     input = input + characters[2]
+TypeError: unsupported operand type(s) for +: 'builtin_function_or_method' and 'str'
+
+
+Traceback (most recent call last):
+  File "keyclass.py", line 153, in <module>
+    one = key.readLine(L1, ["1","2","3","A"])
+  File "keyclass.py", line 129, in readLine
+    input = input + str(characters[0])
 TypeError: unsupported operand type(s) for +: 'builtin_function_or_method' and 'str'
 '''
