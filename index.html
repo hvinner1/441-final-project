@@ -1,22 +1,13 @@
-<form action="action_page.php" method="post">
-
-
-  <div class="container">
-    <label for="uname"><b>Username</b></label>
-    <input type="text" placeholder="Enter Username" name="uname" required>
-    <br> <br>
-
-    <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="psw" required> <br> <br>
-
-    <label>
-      <input type="checkbox" checked="checked" name="remember"> Remember me
-    </label> <br>
-    <button type="submit">Login</button>
-  </div>
- <br>
-  <div class="container" style="background-color:#f1f1f1">
-    <button type="button" class="cancelbtn">Cancel</button>
-    <span class="psw">Forgot <a href="#">password?</a></span>
-  </div>
+<html>
+    <form action="/cgi-bin/alarm_page.py" method="POST">
+        <b>Alarm Control Page</b><br>
+        <b>Turn Off Alarm</b><br>
+        <input type="submit" name="buttonHit" value="Turn Off Alarm"><br>
+        <b>Arm Alarm</b><br>
+        <input type="submit" name="buttonHit" value="Arm Alarm"><br>
+        <b>Reset Pin Password:</b><br>
+        <input type="text" name="Enter New Pin"><br>
+        <input type="submit" name="buttonHit" value="Reset Pin"><br>
+    </input>
 </form>
+</html>

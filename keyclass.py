@@ -125,26 +125,27 @@ class Keypad():
           input = input + characters[3]
       GPIO.output(line, GPIO.LOW)
 
-  # try:
-  #     while True:
-  #         # If a button was previously pressed,
-  #         # check, whether the user has released it yet
-  #         if keypadPressed != -1:
-  #             setAllLines(GPIO.HIGH)
-  #             if GPIO.input(keypadPressed) == 0:
-  #                 keypadPressed = -1
-  #             else:
-  #                 time.sleep(0.1)
-  #         # Otherwise, just read the input
-  #         else:
-  #             if not checkSpecialKeys():
-  #                 one = readLine(L1, ["1","2","3","A"])
-  #                 two = readLine(L2, ["4","5","6","B"])
-  #                 three = readLine(L3, ["7","8","9","C"])
-  #                 four = readLine(L4, ["*","0","#","D"])
-  #                 time.sleep(0.1)
-  #             else:
-  #                 time.sleep(0.1)
-          
-  # except KeyboardInterrupt:
-  #     print("\nApplication stopped!")
+key = Keypad(L1, L2, L3, L4, C1, C2, C3, C4)
+try:
+    while True:
+        # If a button was previously pressed,
+        # check, whether the user has released it yet
+        if keypadPressed != -1:
+            setAllLines(GPIO.HIGH)
+            if GPIO.input(keypadPressed) == 0:
+                keypadPressed = -1
+            else:
+                time.sleep(0.1)
+        # Otherwise, just read the input
+        else:
+            if not checkSpecialKeys():
+                one = key.readLine(L1, ["1","2","3","A"])
+                two = key.readLine(L2, ["4","5","6","B"])
+                three = key.readLine(L3, ["7","8","9","C"])
+                four = key.readLine(L4, ["*","0","#","D"])
+                time.sleep(0.1)
+            else:
+                time.sleep(0.1)
+        
+except KeyboardInterrupt:
+    print("\nApplication stopped!")
