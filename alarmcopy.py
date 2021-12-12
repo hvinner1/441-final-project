@@ -229,6 +229,7 @@ if cstate == 'beeping':
   keycheck.start()
   if input == secretCode:
     cstate = 'Turn Off Alarm'
+    print(cstate)
     #updateHTML(state)
 if cstate == 'Turn Off Alarm':
   print(cstate)
