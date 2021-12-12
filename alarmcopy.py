@@ -84,6 +84,9 @@ def checkSpecialKeys():
         if input == secretCode:
             print("Code correct!")
             # TODO: Unlock a door, turn a light on, etc.
+        elif input == "*":
+          print("Alarm Armed")
+          state = 'Arm Alarm'
         else:
             print("Incorrect code!")
             print(input)
@@ -212,19 +215,23 @@ led = 21 #Assign pin 10 to LED
 # alarmset.start()
 
 if cstate == 'Arm Alarm':
+  print(cstate)
   motorcont = multiprocessing.Process(target=runMotor) 
   motorcont.start()
   alarmset = multiprocessing.Process(target=createAlarm, args=(pir,led))
   alarmset.start()
   cstate = 'beeping'
+  print(cstate)
   #updateHTML(state)
 if cstate == 'beeping':
+  print(cstate)
   keycheck = multiprocessing.Process(target=runKey)
   keycheck.start()
   if input == secretCode:
     cstate = 'Turn Off Alarm'
     #updateHTML(state)
 if cstate == 'Turn Off Alarm':
+  print(cstate)
   motorcont.terminate()
   alarmset.terminate()
   if input == '*':
