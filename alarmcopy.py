@@ -188,10 +188,8 @@ class Alarm():
         if GPIO.input(pir) == True: #If PIR pin goes high, motion is detected
           print ("Motion Detected!")
           buzzer(13) #turn on buzzer to signal motion
-          print("Buzzer on")
           GPIO.output(led, GPIO.HIGH) #Turn on LED
           time.sleep(3) #Keep LED on for 3 seconds
-          print ("led on!")
           GPIO.output(led, GPIO.LOW) #Turn off LED
           time.sleep(.1)
     except KeyboardInterrupt: #Ctrl+c
@@ -217,6 +215,7 @@ led = 21 #Assign pin 10 to LED
 meme = 0
 
 while True:
+  print(meme)
   if cstate == 'Arm Alarm' and meme == 0:
     print(cstate)
     motorcont = multiprocessing.Process(target=runMotor) 
@@ -233,11 +232,11 @@ while True:
     keycheck.start()
     meme = 2
   elif input == secretCode:
-      print("this is new input" + input)
-      cstate = 'Turn Off Alarm'
-      print(cstate)
+    print("this is new input" + input)
+    cstate = 'Turn Off Alarm'
+    print(cstate)
       #updateHTML(state)
-  if cstate == 'Turn Off Alarm':
+  elif cstate == 'Turn Off Alarm':
     print(cstate)
     motorcont.terminate()
     alarmset.terminate()
