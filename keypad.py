@@ -125,7 +125,9 @@ def readLine(line, characters):
     if(GPIO.input(C4) == 1):
         input = input + characters[3]
     GPIO.output(line, GPIO.LOW)
+
 def runKey():
+  keypadPressed = -1
   try:
       while True:
           # If a button was previously pressed,
