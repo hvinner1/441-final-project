@@ -69,6 +69,7 @@ def checkSpecialKeys():
     global input
     global secretCode
     global CC
+    CC = 0
     pressed = False
 
     GPIO.output(L3, GPIO.HIGH)
