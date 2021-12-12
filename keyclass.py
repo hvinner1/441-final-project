@@ -121,7 +121,8 @@ class Keypad():
   # reads the columns and appends the value, that corresponds
   # to the button, to a variable
   def readLine(self, line, characters):
-      global input == ''
+      global input 
+      input = ''
       # We have to send a pulse on each line to
       # detect button presses
       GPIO.output(line, GPIO.HIGH)
