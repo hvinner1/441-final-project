@@ -3,7 +3,7 @@ import time
 from pir import Pir
 from motor import Motor
 GPIO.setmode(GPIO.BCM)
-
+import multiprocessing
 
 global pins, cw, ccw
 pins = [18,20,22,24] # controller inputs: in1, in2, in3, in4
@@ -18,19 +18,23 @@ def runMotor():
     while True:
       stepper.loop(cw)
       stepper.loop(ccw)
-  except:
+  except e:
+    print(e)
     pass
-    GPIO.cleanup()
+
+  GPIO.cleanup()
 
 def buzzer(BUZZER):
     GPIO.setwarnings(False)
     #BUZZER= 13
     buzzState = True
     GPIO.setup(BUZZER, GPIO.OUT)
-    for i in range (3):
-        GPIO.output(BUZZER, buzzState)
-        time.sleep(.1)
-        GPIO.output(BUZZER, False)
+    for i in range (4):               
+      GPIO.output(BUZZER, 0)# set output to 0
+      time.sleep(0.1)# wait 0.5 sec
+      GPIO.output(BUZZER, 1)# set output to 3.3V
+      time.sleep(0.1)
+      GPIO.output(BUZZER, 0)
 
 class Alarm():
 
@@ -47,18 +51,10 @@ class Alarm():
     print ("Press Ctrl+c to end program")
     GPIO.output(led, GPIO.HIGH)
     time.sleep(1)
-    GPIO.output(led, GPIO.LOW)
-  
-  # def runMotor():
-  #   stepper = Motor(pins)
-  #   while True:
-  #     stepper.loop(cw)
-  #     stepper.loop(ccw)
-  #   except:
-  #     pass
-  #   GPIO.cleanup()
+    GPIO.output(led, GPIO.LOW)  
   
   def runAlarm(self, pir, led):
+    stepper = Motor(pins)
     try:
       while True:
         if GPIO.input(pir) == True: #If PIR pin goes high, motion is detected
@@ -70,25 +66,19 @@ class Alarm():
           print ("led on!")
           GPIO.output(led, GPIO.LOW) #Turn off LED
           time.sleep(.1)
-    
     except KeyboardInterrupt: #Ctrl+c
       pass #Do nothing, continue to finally
     GPIO.cleanup() 
     print ("Program ended")
 
+def createAlarm(pir, led):
+  security = Alarm(pir,led)
+  security.setup(led)
+  security.runAlarm(pir, led)
 
 pir = 23 #Assign pin 8 to PIR
 led = 21 #Assign pin 10 to LED
-runMotor()
-security = Alarm(pir,led)
-security.setup(led)
-security.runAlarm(pir, led)
-
-
-
-
-
-  
-
-  
-
+motorcont = multiprocessing.Process(target=runMotor) 
+motorcont.start() 
+alarmset = multiprocessing.Process(target=createAlarm, args=(pir,led))
+alarmset.start()

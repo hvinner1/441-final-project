@@ -4,47 +4,51 @@
 # hits the A-Button, the input is checked.
 import RPi.GPIO as GPIO
 import time
+GPIO.setmode(GPIO.BCM)
+
+L1 = 4
+L2 = 27
+L3 = 17
+L4 = 5
+
+# These are the four columns
+C1 = 6
+C2 = 19
+C3 = 26
+C4 = 16
+
+# The GPIO pin of the column of the key that is currently
+# being held down or -1 if no key is pressed
+keypadPressed = -1
 
 class Keypad():
-  # These are the GPIO pin numbers where the
-  # lines of the keypad matrix are connected
-  L1 = 4
-  L2 = 27
-  L3 = 17
-  L4 = 5
 
-  # These are the four columns
-  C1 = 6
-  C2 = 19
-  C3 = 26
-  C4 = 16
+  def __init__(self, L1, L2, L3, L4, C1, C2, C3, C4):
+    # Setup GPIO
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
 
-  # The GPIO pin of the column of the key that is currently
-  # being held down or -1 if no key is pressed
-  keypadPressed = -1
+    GPIO.setup(L1, GPIO.OUT)
+    GPIO.setup(L2, GPIO.OUT)
+    GPIO.setup(L3, GPIO.OUT)
+    GPIO.setup(L4, GPIO.OUT)
+
+    # Use the internal pull-down resistors
+    GPIO.setup(C1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(C2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(C3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(C4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 
-  # **INSERTED FROM TREVOR TO READ FROM FILE**
-  with open('pinData.txt', 'w') as pinDataRead:
-          pinData = json.load(pinDataRead)
-          secretCode = pinData['pin']
-  #secretCode = "1234"
-  input = ""
 
-  # Setup GPIO
-  GPIO.setwarnings(False)
-  GPIO.setmode(GPIO.BCM)
+  def read():
+    # **INSERTED FROM TREVOR TO READ FROM FILE**
+    with open('pinData.txt', 'w') as pinDataRead:
+            pinData = json.load(pinDataRead)
+            secretCode = pinData['pin']
+    #secretCode = "1234"
+    input = ""
 
-  GPIO.setup(L1, GPIO.OUT)
-  GPIO.setup(L2, GPIO.OUT)
-  GPIO.setup(L3, GPIO.OUT)
-  GPIO.setup(L4, GPIO.OUT)
-
-  # Use the internal pull-down resistors
-  GPIO.setup(C1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-  GPIO.setup(C2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-  GPIO.setup(C3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-  GPIO.setup(C4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
   # This callback registers the key that was pressed
   # if no other key is currently pressed
@@ -53,13 +57,14 @@ class Keypad():
       if keypadPressed == -1:
           keypadPressed = channel
 
+  def detection():
   # Detect the rising edges on the column lines of the
   # keypad. This way, we can detect if the user presses
   # a button when we send a pulse.
-  GPIO.add_event_detect(C1, GPIO.RISING, callback=keypadCallback)
-  GPIO.add_event_detect(C2, GPIO.RISING, callback=keypadCallback)
-  GPIO.add_event_detect(C3, GPIO.RISING, callback=keypadCallback)
-  GPIO.add_event_detect(C4, GPIO.RISING, callback=keypadCallback)
+    GPIO.add_event_detect(C1, GPIO.RISING, callback=keypadCallback)
+    GPIO.add_event_detect(C2, GPIO.RISING, callback=keypadCallback)
+    GPIO.add_event_detect(C3, GPIO.RISING, callback=keypadCallback)
+    GPIO.add_event_detect(C4, GPIO.RISING, callback=keypadCallback)
 
   # Sets all lines to a specific state. This is a helper
   # for detecting when the user releases a button
@@ -120,26 +125,26 @@ class Keypad():
           input = input + characters[3]
       GPIO.output(line, GPIO.LOW)
 
-  try:
-      while True:
-          # If a button was previously pressed,
-          # check, whether the user has released it yet
-          if keypadPressed != -1:
-              setAllLines(GPIO.HIGH)
-              if GPIO.input(keypadPressed) == 0:
-                  keypadPressed = -1
-              else:
-                  time.sleep(0.1)
-          # Otherwise, just read the input
-          else:
-              if not checkSpecialKeys():
-                  one= readLine(L1, ["1","2","3","A"])
-                  two= readLine(L2, ["4","5","6","B"])
-                  three= readLine(L3, ["7","8","9","C"])
-                  four= readLine(L4, ["*","0","#","D"])
-                  time.sleep(0.1)
-              else:
-                  time.sleep(0.1)
+  # try:
+  #     while True:
+  #         # If a button was previously pressed,
+  #         # check, whether the user has released it yet
+  #         if keypadPressed != -1:
+  #             setAllLines(GPIO.HIGH)
+  #             if GPIO.input(keypadPressed) == 0:
+  #                 keypadPressed = -1
+  #             else:
+  #                 time.sleep(0.1)
+  #         # Otherwise, just read the input
+  #         else:
+  #             if not checkSpecialKeys():
+  #                 one = readLine(L1, ["1","2","3","A"])
+  #                 two = readLine(L2, ["4","5","6","B"])
+  #                 three = readLine(L3, ["7","8","9","C"])
+  #                 four = readLine(L4, ["*","0","#","D"])
+  #                 time.sleep(0.1)
+  #             else:
+  #                 time.sleep(0.1)
           
-  except KeyboardInterrupt:
-      print("\nApplication stopped!")
+  # except KeyboardInterrupt:
+  #     print("\nApplication stopped!")
