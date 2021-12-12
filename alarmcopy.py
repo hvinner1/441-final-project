@@ -237,7 +237,7 @@ while True:
     keycheck.start()
     meme = 2
     print(input)
-    if cstate == 'Turn Off Alarm'
+    if cstate == 'Turn Off Alarm':
       break
   if cstate == 'Turn Off Alarm':
     print("this is code" + input)
