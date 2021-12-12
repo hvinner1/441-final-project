@@ -125,7 +125,8 @@ class Keypad():
           input = input + characters[3]
       GPIO.output(line, GPIO.LOW)
 
-key = Keypad(L1, L2, L3, L4, C1, C2, C3, C4)
+
+key = Keypad(L1, L2,L3,L4,C1, C2, C3, C4)
 try:
     while True:
         # If a button was previously pressed,
