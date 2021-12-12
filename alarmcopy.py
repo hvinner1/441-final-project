@@ -67,7 +67,7 @@ def setAllLines(state):
     GPIO.output(L4, state)
 
 def checkSpecialKeys():
-    global input
+    global input, CC
     global secretCode
     pressed = False
 
@@ -237,7 +237,7 @@ while True:
     keycheck.start()
     meme = 2
     print(input)
-    if cstate == 'Turn Off Alarm':
+    if input == secretCode:
       print("fuck")
       break
   if cstate == 'Turn Off Alarm':
