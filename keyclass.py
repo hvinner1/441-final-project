@@ -89,6 +89,7 @@ class Keypad():
       GPIO.output(self.L4, state)
 
   def checkSpecialKeys(self):
+      input = ''
       global secretCode
       pressed = False
 
