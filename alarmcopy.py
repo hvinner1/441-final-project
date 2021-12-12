@@ -4,7 +4,7 @@ from pir import Pir
 from motor import Motor
 GPIO.setmode(GPIO.BCM)
 import multiprocessing
-global pins, cw, ccw, keypadPressed
+global pins, cw, ccw, keypadPressed, cstate
 pins = [18,20,22,24] # controller inputs: in1, in2, in3, in4
 ccw = [ [1,0,0,0],[1,1,0,0],[0,1,0,0],[0,1,1,0],
         [0,0,1,0],[0,0,1,1],[0,0,0,1],[1,0,0,1] ]
@@ -26,6 +26,7 @@ C4 = 16
 keypadPressed = -1
 secretCode = "1234"
 input = ""
+cstate = 'Arm Alarm'
 
 # Setup GPIO
 GPIO.setwarnings(False)
@@ -210,20 +211,20 @@ led = 21 #Assign pin 10 to LED
 # alarmset = multiprocessing.Process(target=createAlarm, args=(pir,led))
 # alarmset.start()
 
-if state == 'Arm Alarm':
+if cstate == 'Arm Alarm':
   motorcont = multiprocessing.Process(target=runMotor) 
   motorcont.start()
   alarmset = multiprocessing.Process(target=createAlarm, args=(pir,led))
   alarmset.start()
-  state = 'beeping'
+  cstate = 'beeping'
   #updateHTML(state)
-if state == 'beeping':
+if cstate == 'beeping':
   keycheck = multiprocessing.Process(target=runKey)
   keycheck.start()
   if input == secretCode:
-    state = 'Turn Off Alarm'
+    cstate = 'Turn Off Alarm'
     #updateHTML(state)
-if state == 'Turn Off Alarm':
+if cstate == 'Turn Off Alarm':
   motorcont.terminate()
   alarmset.terminate()
   if input == '*':
