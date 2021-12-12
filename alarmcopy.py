@@ -234,11 +234,10 @@ while True:
     keycheck = multiprocessing.Process(target=runKey)
     keycheck.start()
     meme = 2
-    CC=1
-  if CC == 1:
-    print("this is code" + input)
-    cstate = 'Turn Off Alarm'
-    print(cstate)
+    if CC == 1:
+      print("this is code" + input)
+      cstate = 'Turn Off Alarm'
+      print(cstate)
           #updateHTML(state)
   if cstate == 'Turn Off Alarm':
     print(cstate)
