@@ -4,7 +4,7 @@ from pir import Pir
 from motor import Motor
 GPIO.setmode(GPIO.BCM)
 import multiprocessing
-global pins, cw, ccw, keypadPressed, state
+global pins, cw, ccw, keypadPressed
 pins = [18,20,22,24] # controller inputs: in1, in2, in3, in4
 ccw = [ [1,0,0,0],[1,1,0,0],[0,1,0,0],[0,1,1,0],
         [0,0,1,0],[0,0,1,1],[0,0,0,1],[1,0,0,1] ]
@@ -26,15 +26,16 @@ C4 = 16
 keypadPressed = -1
 secretCode = "1234"
 input = ""
-state = 'Arm Alarm'
-isMultiprocessing = 0
 
 # Setup GPIO
 GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+
 GPIO.setup(L1, GPIO.OUT)
 GPIO.setup(L2, GPIO.OUT)
 GPIO.setup(L3, GPIO.OUT)
 GPIO.setup(L4, GPIO.OUT)
+
 # Use the internal pull-down resistors
 GPIO.setup(C1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(C2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
@@ -76,15 +77,12 @@ def checkSpecialKeys():
         pressed = True
     GPIO.output(L3, GPIO.LOW)
         #new code for changing secrete code (decided against this method for better secruity)
-#end of new code
+  #end of new code
     GPIO.output(L1, GPIO.HIGH)
     if (not pressed and GPIO.input(C4) == 1):
         if input == secretCode:
             print("Code correct!")
             # TODO: Unlock a door, turn a light on, etc.
-        elif input == "*":
-          print("Alarm Armed")
-          state = 'Arm Alarm'
         else:
             print("Incorrect code!")
             print(input)
@@ -133,11 +131,12 @@ def runKey():
                   four= readLine(L4, ["*","0","#","D"])
                   time.sleep(0.2)
               else:
-                  time.sleep(0.2)        
+                  time.sleep(0.2)
+          
   except KeyboardInterrupt:
       print("\nApplication stopped!")
 
-def runMotor():
+def runMotor(): #runs the motor cw and ccw in a loop
   stepper = Motor(pins)
   try:
     while True:
@@ -149,7 +148,7 @@ def runMotor():
 
   GPIO.cleanup()
 
-def buzzer(BUZZER):
+def buzzer(BUZZER): #turns on the buzzer and beeps 4 times
     GPIO.setwarnings(False)
     #BUZZER= 13
     buzzState = True
@@ -160,32 +159,13 @@ def buzzer(BUZZER):
       GPIO.output(BUZZER, 1)# set output to 3.3V
       time.sleep(0.1)
       GPIO.output(BUZZER, 0)
- '''
-def checkHTML():
-  with open('pinData.txt', 'r') as pinDataRead:
-            pinData = json.load(pinDataRead)
-            state = pinData['selection']
-            secretCode = pinData['pin']
-            # Three different possible states
-            # 'Turn Off Alarm' -> disables alarm
-            # 'Arm Alarm' -> sensing
-            # 'Reset Pin' -> changes pin
-def updateHTML(state):
-  dataDump = {'pin':secretCode,'selection':state}
-  with open('pinData.txt', 'w') as f:
-    json.dump(dataDump, f)
-            # Three different possible states
-            # 'Turn Off Alarm' -> disables alarm
-            # 'Arm Alarm' -> sensing
-            # 'Reset Pin' -> changes pin
-'''
 
 class Alarm():
 
-  def __init__(self, pir, led):
+  def __init__(self, pir, led): #create alarm as a pir
     self.alarm = Pir(pir, led)
   
-  def setup(self, led):
+  def setup(self, led): #set up of the sensor to initialize
     GPIO.output(led, GPIO.LOW)
     print ("Sensor initializing . . .")
     #time.sleep(30) #Give sensor time to startup
@@ -195,17 +175,15 @@ class Alarm():
     print ("Press Ctrl+c to end program")
     GPIO.output(led, GPIO.HIGH)
     time.sleep(1)
-    GPIO.output(led, GPIO.LOW)
-    state = 'Arm Alarm'
+    GPIO.output(led, GPIO.LOW)  
   
-  def runAlarm(self, pir, led):
+  def runAlarm(self, pir, led): #runs the actual alarm
     stepper = Motor(pins)
     try:
       while True:
         if GPIO.input(pir) == True: #If PIR pin goes high, motion is detected
           print ("Motion Detected!")
-          state = 'beeping'
-          buzzer(13)
+          buzzer(13) #turn on buzzer to signal motion
           print("Buzzer on")
           GPIO.output(led, GPIO.HIGH) #Turn on LED
           time.sleep(3) #Keep LED on for 3 seconds
@@ -217,22 +195,20 @@ class Alarm():
     GPIO.cleanup() 
     print ("Program ended")
 
-def createAlarm(pir, led):
+def createAlarm(pir, led): #create a function to create and run alarm for multiprocessing
   security = Alarm(pir,led)
   security.setup(led)
   security.runAlarm(pir, led)
 
-
-# htmlchecker = multiprocessing.Process(target=checkHTML)
-# htmlchecker.start()
-#keycheck = multiprocessing.Process(target=runKey) 
-#keycheck.start() 
-#motorcont = multiprocessing.Process(target=runMotor) 
-#motorcont.start()
-#alarmset = multiprocessing.Process(target=createAlarm, args=(pir,led))
-#alarmset.start()
-
-
+pir = 23 #Assign pin 8 to PIR
+led = 21 #Assign pin 10 to LED
+#run functions continuously with multiprocessing
+# keycheck = multiprocessing.Process(target=runKey) 
+# keycheck.start() 
+# motorcont = multiprocessing.Process(target=runMotor) 
+# motorcont.start() 
+# alarmset = multiprocessing.Process(target=createAlarm, args=(pir,led))
+# alarmset.start()
 
 if state == 'Arm Alarm':
   motorcont = multiprocessing.Process(target=runMotor) 
@@ -253,16 +229,3 @@ if state == 'Turn Off Alarm':
   if input == "*"
   motorcont.start()
   alarmset.start()
-  #state = 'Arm Alarm'
-
-
-
- '''GPIO.output(L4, GPIO.HIGH)
-
-    if (GPIO.input(C4) == 1):
-        print(input)
-        print("changing code...")
-        secretCode = input
-        print(secretCode)
-        pressed = True
-    GPIO.output(L4, GPIO.LOW)''' 
