@@ -3,6 +3,7 @@ import multiprocessing
 import time
 from pir import Pir
 from motor import Motor
+location = '/usr/lib/cgi-bin/pinData.txt'
 
 # global pins, cw, ccw, keypadPressed
 
@@ -105,7 +106,7 @@ def checkSpecialKeys():
         elif kinput == "*":
           print("Alarm Armed")
           state = 'Arm Alarm'
-          cstate = "Armed"
+          cstate = 'Arm Alarm'
         else:
             print("Incorrect code!")
             print("\"" + kinput + "\"")
@@ -206,7 +207,7 @@ class Alarm():
     GPIO.output(led, GPIO.HIGH)
     time.sleep(1)
     GPIO.output(led, GPIO.LOW)
-    cstate = "Armed"  
+    cstate = "Arm Alarm"  
   
   def runAlarm(self, pir, led): #runs the actual alarm
     stepper = Motor(pins)
@@ -241,32 +242,65 @@ security.setup(led)
 
 print("cstate: " + cstate)
 
-while True:
-    if cstate == "Armed":
-        # Wait for 1 second between loops
-        time.sleep(1)
+def checkHTML():
+  with open(location, 'r') as pinDataRead:
+    pinData = json.load(pinDataRead)
+    cstate = pinData['selection']
+    secretCode = pinData['pin']
+            # Three different possible states
+            # 'Turn Off Alarm' -> disables alarm
+            # 'Arm Alarm' -> sensing
+            # 'Reset Pin' -> changes pin
 
-        # Look left and scan for motion for 10 seconds
-        stepper.loop(cw)
-        security.runAlarm(pir, led)    
+def updateHTML(state):
+  dataDump = {'pin':secretCode,'selection':cstate}
+  with open(location, 'w') as f:
+    json.dump(dataDump, f)
+            # Three different possible states
+            # 'Turn Off Alarm' -> disables alarm
+            # 'Arm Alarm' -> sensing
+            # 'Reset Pin' -> changes pin
 
-        # Give 10 seconds to deactivate
-        print("Enter Code to deactivate")
-        runKey()
-        
-        print("cstate 1: " + cstate)
 
-        if(cstate == "Turn Off Alarm"):
-            continue
 
-        # Look right and scan for motion for 10 seconds
-        stepper.loop(ccw)
-        security.runAlarm(pir, led)
 
-        # Give 10 seconds to deactivate
-        print("Enter Code to deactivate")
-        runKey()
-        print("cstate 2: " + cstate)
-    elif cstate == "Turn Off Alarm":
-        print("Waiting")
-        runKey()
+try:
+  while True:
+      dataDump = {'pin':secretCode,'selection':cstate}
+      with open('pinData.txt', 'w') as f:
+        json.dump(dataDump, f)
+      with open('pinData.txt', 'r') as pinDataRead:
+        pinData = json.load(pinDataRead)
+        cstate = pinData['selection']
+        secretCode = pinData['pin']
+      if cstate == "Arm Alarm":
+          # Wait for 1 second between loops
+          time.sleep(1)
+
+          # Look left and scan for motion for 10 seconds
+          stepper.loop(cw)
+          security.runAlarm(pir, led)    
+
+          # Give 10 seconds to deactivate
+          print("Enter Code to deactivate")
+          runKey()
+          checkHTML()
+          
+          print("cstate 1: " + cstate)
+
+          if(cstate == "Turn Off Alarm"):
+              continue
+
+          # Look right and scan for motion for 10 seconds
+          stepper.loop(ccw)
+          security.runAlarm(pir, led)
+
+          # Give 10 seconds to deactivate
+          print("Enter Code to deactivate")
+          runKey()
+          checkHTML()
+          print("cstate 2: " + cstate)
+      elif cstate == "Turn Off Alarm":
+          print("Waiting")
+          runKey()
+          checkHTML()
