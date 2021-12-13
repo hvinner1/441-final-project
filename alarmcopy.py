@@ -1,26 +1,30 @@
 import RPi.GPIO as GPIO
+import multiprocessing
 import time
 from pir import Pir
 from motor import Motor
-GPIO.setmode(GPIO.BCM)
-import multiprocessing
-global pins, cw, ccw, keypadPressed
+
+# global pins, cw, ccw, keypadPressed
+
 pins = [18,20,22,24] # controller inputs: in1, in2, in3, in4
 ccw = [ [1,0,0,0],[1,1,0,0],[0,1,0,0],[0,1,1,0],
         [0,0,1,0],[0,0,1,1],[0,0,0,1],[1,0,0,1] ]
 cw = ccw[:]  # use slicing to copy list 
 cw.reverse()
+
 # These are the GPIO pin numbers where the
 # lines of the keypad matrix are connected
 L1 = 4
 L2 = 27
 L3 = 17
 L4 = 5
+
 # These are the four columns
 C1 = 6
 C2 = 19
 C3 = 26
 C4 = 16
+
 # The GPIO pin of the column of the key that is currently
 # being held down or -1 if no key is pressed
 keypadPressed = -1
@@ -28,10 +32,10 @@ secretCode = "1234"
 kinput = ""
 cstate = 'Arm Alarm'
 CC = 0
+
 # Setup GPIO
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-
 GPIO.setup(L1, GPIO.OUT)
 GPIO.setup(L2, GPIO.OUT)
 GPIO.setup(L3, GPIO.OUT)
@@ -70,12 +74,17 @@ def checkSpecialKeys():
     global secretCode
     global kinput 
     global CC
+    global cstate
     pressed = False
 
     GPIO.output(L3, GPIO.HIGH)
     if (GPIO.input(C4) == 1):
-        print(kinput)
-        print("Input reset!");
+        print("Input reset!")
+        print("kinput: " + kinput)
+        print("Line 1: " + str(GPIO.input(C1)))
+        print("Line 2: " + str(GPIO.input(C2)))
+        print("Line 3: " + str(GPIO.input(C3)))
+        print("Line 4: " + str(GPIO.input(C4)))
         pressed = True
     GPIO.output(L3, GPIO.LOW)
         #new code for changing secrete code (decided against this method for better secruity)
@@ -84,16 +93,22 @@ def checkSpecialKeys():
     if (not pressed and GPIO.input(C4) == 1):
         if kinput == secretCode:
             print("Code correct!")
+            print("kinput: " + kinput)
+            print("Line 1: " + str(GPIO.input(C1)))
+            print("Line 2: " + str(GPIO.input(C2)))
+            print("Line 3: " + str(GPIO.input(C3)))
+            print("Line 4: " + str(GPIO.input(C4)))
             CC = 1
             print(CC)
-            cstate == 'Turn Off Alarm'
+            cstate = 'Turn Off Alarm'
             # TODO: Unlock a door, turn a light on, etc.
         elif kinput == "*":
           print("Alarm Armed")
           state = 'Arm Alarm'
+          cstate = "Armed"
         else:
             print("Incorrect code!")
-            print(kinput)
+            print("\"" + kinput + "\"")
             # TODO: Sound an alarm, send an email, etc.
         pressed = True
     GPIO.output(L3, GPIO.LOW)
@@ -119,40 +134,46 @@ def readLine(line, characters):
     GPIO.output(line, GPIO.LOW)
 
 def runKey():
-  try:
-      keypadPressed = -1
-      while True:
-          # If a button was previously pressed,
-          # check, whether the user has released it yet
-          if keypadPressed != -1:
-              setAllLines(GPIO.HIGH)
-              if GPIO.input(keypadPressed) == 0:
-                  keypadPressed = -1
-              else:
-                  time.sleep(0.2)
-          # Otherwise, just read the input
-          else:
-              if not checkSpecialKeys():
-                  one= readLine(L1, ["1","2","3","A"])
-                  two= readLine(L2, ["4","5","6","B"])
-                  three= readLine(L3, ["7","8","9","C"])
-                  four= readLine(L4, ["*","0","#","D"])
-                  time.sleep(0.2)
-              else:
-                  time.sleep(0.2)
-          
-  except KeyboardInterrupt:
-      print("\nApplication stopped!")
+    try:
+        keypadPressed = -1
+        start = time.time()
+        while True:
+            if time.time() - start > 10:
+                break
+            # If a button was previously pressed,
+            # check, whether the user has released it yet
+            if keypadPressed != -1:
+                setAllLines(GPIO.HIGH)
+                if GPIO.input(keypadPressed) == 0:
+                    keypadPressed = -1
+                else:
+                    time.sleep(0.2)
+            # Otherwise, just read the input
+            else:
+                if not checkSpecialKeys():
+                    one   = readLine(L1, ["1","2","3","A"])
+                    two   = readLine(L2, ["4","5","6","B"])
+                    three = readLine(L3, ["7","8","9","C"])
+                    four  = readLine(L4, ["*","0","#","D"])
+                    time.sleep(0.2)
+                else:
+                    time.sleep(0.2)
+    except KeyboardInterrupt:
+        print("\nApplication stopped!")
+        exit()
 
 def runMotor(): #runs the motor cw and ccw in a loop
+  global CC
+
   stepper = Motor(pins)
   try:
     while True:
+      print("runMotor CC: " + str(CC))
       stepper.loop(cw)
       stepper.loop(ccw)
-  except e:
+  except Exception as e:
     print(e)
-    pass
+    exit()
 
   GPIO.cleanup()
 
@@ -174,6 +195,7 @@ class Alarm():
     self.alarm = Pir(pir, led)
   
   def setup(self, led): #set up of the sensor to initialize
+    global cstate
     GPIO.output(led, GPIO.LOW)
     print ("Sensor initializing . . .")
     #time.sleep(30) #Give sensor time to startup
@@ -183,71 +205,68 @@ class Alarm():
     print ("Press Ctrl+c to end program")
     GPIO.output(led, GPIO.HIGH)
     time.sleep(1)
-    GPIO.output(led, GPIO.LOW)  
+    GPIO.output(led, GPIO.LOW)
+    cstate = "Armed"  
   
   def runAlarm(self, pir, led): #runs the actual alarm
     stepper = Motor(pins)
     try:
-      while True:
-        if GPIO.input(pir) == True: #If PIR pin goes high, motion is detected
-          print ("Motion Detected!")
-          buzzer(13) #turn on buzzer to signal motion
-          GPIO.output(led, GPIO.HIGH) #Turn on LED
-          time.sleep(3) #Keep LED on for 3 seconds
-          GPIO.output(led, GPIO.LOW) #Turn off LED
-          time.sleep(.1)
+        start = time.time()
+        while True:
+            if GPIO.input(pir) == True: #If PIR pin goes high, motion is detected
+                print ("Motion Detected!")
+                buzzer(13) #turn on buzzer to signal motion
+                GPIO.output(led, GPIO.HIGH) #Turn on LED
+                time.sleep(3) #Keep LED on for 3 seconds
+                GPIO.output(led, GPIO.LOW) #Turn off LED
+                time.sleep(.1)
+            elif (time.time() - start) > 10:
+                break
     except KeyboardInterrupt: #Ctrl+c
-      pass #Do nothing, continue to finally
-    GPIO.cleanup() 
-    print ("Program ended")
+        exit()
 
 def createAlarm(pir, le): #create a function to create and run alarm for multiprocessing
-  security = Alarm(pir,led)
-  security.setup(led)
-  security.runAlarm(pir, led)
+    security = Alarm(pir,led)
+    security.setup(led)
+    security.runAlarm(pir, led)
 
 pir = 23 #Assign pin 8 to PIR
 led = 21 #Assign pin 10 to LED
-#run functions continuously with multiprocessing
-# keycheck = multiprocessing.Process(target=runKey) 
-# keycheck.start() 
-# motorcont = multiprocessing.Process(target=runMotor) 
-# motorcont.start() 
-# alarmset = multiprocessing.Process(target=createAlarm, args=(pir,led))
-# alarmset.start()
 
 meme = 0
+stepper = Motor(pins)
+   
+security = Alarm(pir,led)
+security.setup(led)
+
+print("cstate: " + cstate)
 
 while True:
-  time.sleep(1)
-  print(CC)
-  if cstate == 'Arm Alarm' and meme == 0:
-    print(cstate)
-    motorcont = multiprocessing.Process(target=runMotor) 
-    motorcont.start()
-    alarmset = multiprocessing.Process(target=createAlarm, args=(pir,led))
-    alarmset.start()
-    cstate = 'beeping'
-    print(cstate)
+    if cstate == "Armed":
+        # Wait for 1 second between loops
+        time.sleep(1)
 
-    meme = 1
-  #updateHTML(state)
-  if cstate == 'beeping' and meme == 1:
-    print(cstate)
-    keycheck = multiprocessing.Process(target=runKey)
-    keycheck.start()
-    meme = 2
-    print(kinput)
-  if cstate == 'Turn Off Alarm':
-    print("this is code" + kinput)
-    cstate = 'Turn Off Alarm'
-    print(cstate)
-          #updateHTML(state)
-  if cstate == 'Turn Off Alarm':
-    print(cstate)
-    motorcont.terminate()
-    alarmset.terminate()
-    if kinput == '*':
-      motorcont.start()
-      alarmset.start()
-      meme = 0
+        # Look left and scan for motion for 10 seconds
+        stepper.loop(cw)
+        security.runAlarm(pir, led)    
+
+        # Give 10 seconds to deactivate
+        print("Enter Code to deactivate")
+        runKey()
+        
+        print("cstate 1: " + cstate)
+
+        if(cstate == "Turn Off Alarm"):
+            continue
+
+        # Look right and scan for motion for 10 seconds
+        stepper.loop(ccw)
+        security.runAlarm(pir, led)
+
+        # Give 10 seconds to deactivate
+        print("Enter Code to deactivate")
+        runKey()
+        print("cstate 2: " + cstate)
+    elif cstate == "Turn Off Alarm":
+        print("Waiting")
+        runKey()
